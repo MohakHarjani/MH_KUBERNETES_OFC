@@ -1,0 +1,167 @@
+kubectl version
+kubectl create deployment hello-world-rest-api --image=in28min/hello-world-rest-api:0.0.1.RELEASE
+
+https://hub.docker.com/u/in28min
+
+deployment.apps/hello-world-rest-api created
+how to expose it to outer world?
+kubectl expose deployment hello-world-rest-api --type=LoadBalancer --port=8080
+service/hello-world-rest-api exposed
+
+goto kubernetes engine dashboard--> services and ingreses
+or in search box enter - gateways,services and ingress
+it takes some time, after some time you would see
+hello-world-rest-service endpoint created with ok button
+click on the end-point.
+it would open in browser and say healthy true, type relative url /helloworld
+and you would see the output.
+35.223.169.37:8080/hello-world
+
+as below:
+HelloWorld v1 9trh2
+---x----x-----
+kubectl get events
+Node -> pod -> ReplicaSet -> Deployment -> Service
+kubectl get pod
+kubectl get service
+kubectl get replicaset
+kubectl get pods -o wide
+kubectl explain pods (cntl-shift-pageup and cntrl-shift-pagedown to scroll up and down on cloud shell)
+kubectl describe pod enter-podname
+----------------------------------------------------------------
+explanation:
+kubectl create deployment -kubernetes created-> pod,replicaset,deployment
+kubectl expose deployment --kubernetes created-> service
+----------------------------------------------
+kubectl get rs - shows desired no of pods that should
+(in our case- it shows desired no of pods as 1)
+be kept running.rs monitors and ensures that , that many pods
+are running. if we kill 1 pods using kubectl delete pod command
+replicaset will automatically start another pod so that service
+remains accessible.
+----------------------------------------------------------------
+how to create more pods for given service in replicaset?
+kubectl scale deployment hello-world-rest-api --replicas=3
+----------------------------------------------------------
+kubectl get events --sort-by=.metadata.creationTimestamp
+kubectl explain replicaset
+---------------------------------------------------------
+How to create a new deployment for restservice version 2 with 0 downtime
+deployment?
+kubectl set image deployment deploymentname containername=image name:version2
+below command - will give u deployemnt name and container name both.
+kubectl get deployment -o wide  
+kubectl set image deployment hello-world-rest-api hello-world-rest-api=in28min/hello-world-rest-api:0.0.2.RELEASE
+
+what will happen if you give incorrect image name for deployment?
+BELOW COMMAND WILL GIVES INCORRECT IMAGE NAME, SO IT WILL CREATE
+A NEW REPLICASET AND THEN TRY TO CREATE A NEW POD TO DEPLOY THE
+CONTAINER FOR THIS new IMAGE BUT POD CREATION WILL FAIL, as image
+is incorrect.
+Application will still be up and running on earlier replicaset for
+already deployed container image.
+
+kubectl set image deployment hello-world-rest-api hello-world-rest-api=DUMMY_IMAGE:TEST
+kubectl get pods  - command can show new pod creation for newly
+created replicaset failed.
+-------------------------------------------------
+in practice - replicaset is always tied to specific version of
+image and pods of that replicaset always ensure that those many instances
+of that specific version are always running.
+----------------------------------------------------------
+why do we need deployments?
+deployment ensures that a release upgrade from v1 to v2 happens
+without a hitch.without a down time.
+diff release strategies can be there.
+default deployment release strategy:rolling updates
+--------------------------------------------------------
+although pods (having contianer) have diff ip address
+how is it that ur service url has permanent ip address?
+ans: That's because of service creation.service
+creates a load-balancer tied to permanent ip address->this
+load balancer then further distributes load among diff pods
+running on diff ip addresses. pods can be delted and created
+so pods ip addresses can come and go but service address
+remains permanent.THis service permanent ip address is created
+when we expose a deployment service through - kubectl expose
+deployment command.
+---------------------------------------------------------------
+search for load balancing (network service) in search box
+you will find that one load balancer is created for this particular
+service.click on load-balancer created for this service you will
+see all details.you will also see diff pods and their ip addresses
+among which this load-balancer distributes the load.
+---------------------------------------------------------------
+GCLOUD SDK:
+install gcloud sdk for window 10 (installer)
+at the end of installation on cmd prompt it will give u url to
+login to google cloud.
+pick the cloud project to use: check the project name you have
+created on google cloud dsahboard and choose that no.
+do you want to compute default google compute/zone:N
+----------------------------------------------------
+gcloud components install kubectl
+----------------------------------------------------
+Install Google Kubernetes Engine: gke-gcloud-auth-plugin
+by vising below link:
+https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin
+C:\Users\namra\AppData\Local\Google\Cloud SDK>gcloud components install kubectl
+
+Restarting command:
+  $ gcloud components install kubectl
+
+
+C:\Users\namra\AppData\Local\Google\Cloud SDK>kubectl version --client
+WARNING: This version information is deprecated and will be replaced with the output from kubectl version --short.  Use --output=yaml|json to get the full version.
+Client Version: version.Info{Major:"1", Minor:"26+", GitVersion:"v1.26.13-dispatcher", GitCommit:"eb237aa977a4a0cf4fcec65fc730b4d96af37ccf", GitTreeState:"clean", BuildDate:"2024-02-08T00:25:08Z", GoVersion:"go1.20.13", Compiler:"gc", Platform:"windows/amd64"}
+Kustomize Version: v4.5.7
+
+C:\Users\namra\AppData\Local\Google\Cloud SDK>gcloud container clusters get-credentials namrata-cluster-1 --region us-central1 --project divine-descent-416813
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for namrata-cluster-1.
+
+C:\Users\namra\AppData\Local\Google\Cloud SDK>
+-------------------------------------------------------------------
+on kubernetes engine dashboard, click on cluster and connect buttom
+to get connect command copy and paste it on 
+command prompt where you logged into google cloud account
+through google cloud sdk.
+
+---------------------------------------------------------
+https://github.com/in28minutes/spring-microservices-v3/tree/main/05.kubernetes
+C:\microservices_examples\spring-microservices-v3-main\05.kubernetes
+-------------------------------------------------
+create docker id:
+goto http://hub.docker.com and signup-docker id and password.
+you can use your google account sigle-sign-on to login to hub.docker 
+import projects from above in28min.microservices v3-kubernetes-url
+currency-exchange-microservice 
+currency-conversion-microservice
+build and run and see that they are running in eclipse
+-------------------------------------------
+under maven plugin-replace image id from in28min to ur docker id.
+for both the services.
+runs as maven build->goals-> spring-boot:build-image -DskipTests
+-------------------------------------------------------
+start docker engine/daemon
+cmd prompt>docler login
+enter docker id and password
+login succeeded
+docker push imagename
+C:\Users\namra\AppData\Local\Google\Cloud SDK>docker login
+Log in with your Docker ID or email address to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com/ to create one.
+You can log in with your password or a Personal Access Token (PAT). Using a limited-scope PAT grants better security and is required for organizations using SSO. Learn more at https://docs.docker.com/go/access-tokens/
+
+Username: namrata16
+Password:
+
+Login Succeeded
+
+C:\Users\namra\AppData\Local\Google\Cloud SDK>docker push namrata16/mmv3-currency-exchange-service:0.0.11-SNAPSHOT
+---------------------------------------------------------------
+on cmd prompt>after login to google cloud sdk>
+
+C:\Users\namra\AppData\Local\Google\Cloud SDK>kubectl create deployment currency-exchange --image=namrata16/mmv3-currenc
+y-exchange-service:0.0.11-SNAPSHOT
+Warning: autopilot-default-resources-mutator:Autopilot updated Deployment default/currency-exchange: defaulted unspecified resources for containers [mmv3-currency-exchange-service] (see http://g.co/gke/autopilot-defaults)
+deployment.apps/currency-exchange created
